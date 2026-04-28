@@ -2871,7 +2871,7 @@
     <ClCompile Include="..\..\Source\AudioTimeParams.cpp">
       <Filter>AW_AiPD_Proj1\Source</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Source\AudioTimePlotComponent.cpp">
+    <ClCompile Include="..\..\Source\AudioParamsPlotComponent.cpp">
       <Filter>AW_AiPD_Proj1\Source</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Source\WAVDataAnalyzer.cpp">
@@ -2897,6 +2897,9 @@
     </ClCompile>
     <ClCompile Include="..\..\ImGui\imgui.cpp">
       <Filter>ImGui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\AudioFreqParams.cpp">
+      <Filter>AW_AiPD_Proj1\Source</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -6290,7 +6293,7 @@
     <ClInclude Include="..\..\Source\AudioTimeParams.h">
       <Filter>AW_AiPD_Proj1\Source</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Source\AudioTimePlotComponent.h">
+    <ClInclude Include="..\..\Source\AudioParamsPlotComponent.h">
       <Filter>AW_AiPD_Proj1\Source</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Source\WAVDataAnalyzer.h">
@@ -6307,6 +6310,9 @@
     </ClInclude>
     <ClInclude Include="..\..\ImGui\imgui.h">
       <Filter>ImGui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\AudioFreqParams.h">
+      <Filter>AW_AiPD_Proj1\Source</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

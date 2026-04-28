@@ -1,6 +1,6 @@
 #pragma once
 #include "WAVDataAnalyzer.h"
-#include "AudioTimePlotComponent.h"
+#include "AudioParamsPlotComponent.h"
 
 class MainComponent  : public juce::Component, juce::MenuBarModel
 {
@@ -38,8 +38,27 @@ private:
 	juce::ToggleButton silenceButton;
 	juce::ToggleButton sonorousButton;
 	juce::ToggleButton speechMusicButton;
-	AudioTimePlotComponent audioTimePlot;
 
+	juce::ToggleButton timeParamsPlotsChoiceButton;
+	juce::ToggleButton freqParamsPlotsChoiceButton;
+	juce::ToggleButton spectrogramChoiceButton;
+
+	juce::ToggleButton frame256SpectrogramChoiceButton;
+	juce::ToggleButton frame512SpectrogramChoiceButton;
+	juce::ToggleButton frame1024SpectrogramChoiceButton;
+
+	juce::ToggleButton overlap0SpectrogramChoiceButton;
+	juce::ToggleButton overlap25SpectrogramChoiceButton;
+	juce::ToggleButton overlap50SpectrogramChoiceButton;
+
+	juce::ComboBox selectFreqParamPlotButton;
+	juce::ComboBox selectWindowFunctionButton;
+
+	PLOT_PAGE plotPage = PLOT_PAGE::TIME_PARAMS;
+
+	AudioParamsPlotComponent audioParamsPlot;
+
+	void changeButtonsVisibility(bool forTimePageVisible, bool forFreqPageVisible, bool forSpectrogramVisible, bool forFreqAndSpectrogramVisible);
 	void drawFrameParamPlot(juce::Graphics& g, juce::Rectangle<int> plotArea, const std::vector<float>& params, juce::Colour color);
 	void drawAudioPlot(juce::Graphics& g, juce::Rectangle<int> plotArea, const std::vector<float>& params, juce::Colour color);
 	void drawDetection(juce::Graphics& g, juce::Rectangle<int> plotArea, const std::vector<bool>& silentFrames, juce::Colour color);

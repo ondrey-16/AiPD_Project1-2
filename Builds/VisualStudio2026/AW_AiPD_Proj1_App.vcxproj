@@ -60,7 +60,7 @@
     <ClCompile>
       <Optimization>Disabled</Optimization>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
-      <AdditionalIncludeDirectories>..\..\ImGui;..\..\JuceLibraryCode;..\..\JuceModules\modules;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\FFTW;..\..\ImGui;..\..\JuceLibraryCode;..\..\JuceModules\modules;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;WIN32;_WINDOWS;DEBUG;_DEBUG;JUCE_PROJUCER_VERSION=0x8000c;JUCE_MODULE_AVAILABLE_juce_analytics=1;JUCE_MODULE_AVAILABLE_juce_audio_basics=1;JUCE_MODULE_AVAILABLE_juce_audio_devices=1;JUCE_MODULE_AVAILABLE_juce_audio_formats=1;JUCE_MODULE_AVAILABLE_juce_core=1;JUCE_MODULE_AVAILABLE_juce_data_structures=1;JUCE_MODULE_AVAILABLE_juce_events=1;JUCE_MODULE_AVAILABLE_juce_graphics=1;JUCE_MODULE_AVAILABLE_juce_gui_basics=1;JUCE_MODULE_AVAILABLE_juce_gui_extra=1;JUCE_MODULE_AVAILABLE_juce_opengl=1;JUCE_GLOBAL_MODULE_SETTINGS_INCLUDED=1;JUCE_STRICT_REFCOUNTEDPOINTER=1;JUCE_STANDALONE_APPLICATION=1;JUCER_VS2026_78A5042=1;JUCE_APP_VERSION=1.0.0;JUCE_APP_VERSION_HEX=0x10000;JucePlugin_Build_VST=0;JucePlugin_Build_VST3=0;JucePlugin_Build_AU=0;JucePlugin_Build_AUv3=0;JucePlugin_Build_AAX=0;JucePlugin_Build_Standalone=0;JucePlugin_Build_Unity=0;JucePlugin_Build_LV2=0;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
       <RuntimeTypeInfo>true</RuntimeTypeInfo>
@@ -71,7 +71,7 @@
       <WarningLevel>Level4</WarningLevel>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
-      <LanguageStandard>stdcpp17</LanguageStandard>
+      <LanguageStandard>stdcpp20</LanguageStandard>
     </ClCompile>
     <ResourceCompile>
       <AdditionalIncludeDirectories>..\..\JuceLibraryCode;C:\Program Files\JUCE\JUCE\modules;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
@@ -85,6 +85,8 @@
       <ProgramDatabaseFile>$(IntDir)\AW_AiPD_Proj1.pdb</ProgramDatabaseFile>
       <SubSystem>Windows</SubSystem>
       <LargeAddressAware>true</LargeAddressAware>
+      <AdditionalDependencies>libfftw3f-3.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>C:\Users\andrz\source\repos\AiPD_Project1\FFTW;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
     <Bscmake>
       <SuppressStartupBanner>true</SuppressStartupBanner>
@@ -146,8 +148,9 @@
     <ClCompile Include="..\..\ImGui\imgui_widgets.cpp" />
     <ClCompile Include="..\..\ImGui\implot\implot.cpp" />
     <ClCompile Include="..\..\ImGui\implot\implot_items.cpp" />
+    <ClCompile Include="..\..\Source\AudioFreqParams.cpp" />
     <ClCompile Include="..\..\Source\AudioTimeParams.cpp" />
-    <ClCompile Include="..\..\Source\AudioTimePlotComponent.cpp" />
+    <ClCompile Include="..\..\Source\AudioParamsPlotComponent.cpp" />
     <ClCompile Include="..\..\Source\Main.cpp" />
     <ClCompile Include="..\..\Source\MainComponent.cpp" />
     <ClCompile Include="..\..\..\..\..\..\..\Program Files\JUCE\JUCE\modules\juce_analytics\analytics\juce_Analytics.cpp">
@@ -2526,8 +2529,9 @@
     <ClInclude Include="..\..\ImGui\backends\imgui_impl_opengl3_loader.h" />
     <ClInclude Include="..\..\ImGui\imgui.h" />
     <ClInclude Include="..\..\ImGui\implot\implot.h" />
+    <ClInclude Include="..\..\Source\AudioFreqParams.h" />
     <ClInclude Include="..\..\Source\AudioTimeParams.h" />
-    <ClInclude Include="..\..\Source\AudioTimePlotComponent.h" />
+    <ClInclude Include="..\..\Source\AudioParamsPlotComponent.h" />
     <ClInclude Include="..\..\Source\MainComponent.h" />
     <ClInclude Include="..\..\..\..\..\..\..\Program Files\JUCE\JUCE\modules\juce_analytics\analytics\juce_Analytics.h" />
     <ClInclude Include="..\..\..\..\..\..\..\Program Files\JUCE\JUCE\modules\juce_analytics\analytics\juce_ButtonTracker.h" />
