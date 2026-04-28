@@ -376,6 +376,8 @@ void AudioParamsPlotComponent::renderFreqParamsPlot()
 {
 	std::lock_guard<std::mutex> lock(this->setDataMutex);
 
+	bool ifFrameChanged = false;
+
 	ImGui::SetNextWindowPos(ImVec2(0, 0), ImGuiCond_Always);
 	ImGui::SetNextWindowSize(ImVec2((float)getWidth(), (float)getHeight()), ImGuiCond_Always);
 
@@ -545,13 +547,14 @@ void AudioParamsPlotComponent::renderFreqParamsPlot()
 				if (prevFrame != this->chosenFreqFrame)
 				{
 					updateFrameFreqSpectrumOnDisplay();
+					ifFrameChanged = true;
 				}
 			}
 		}
 	}
 	ImGui::End();
 	ImGui::PopStyleVar(2);
-	this->shouldFitPlots = false;
+	this->shouldFitPlots = ifFrameChanged;
 }
 
 void AudioParamsPlotComponent::renderSpectrogramPlot()
@@ -827,8 +830,6 @@ void AudioParamsPlotComponent::fillChosenFreqFrame()
 	drawList->AddRectFilled(p1, p2, IM_COL32(255, 0, 0, 60));
 
 	ImPlot::PopPlotClipRect();
-
-	this->shouldFitPlots = true;
 }
 
 void AudioParamsPlotComponent::newOpenGLContextCreated()
