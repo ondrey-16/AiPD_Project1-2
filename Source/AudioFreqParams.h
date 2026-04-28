@@ -13,7 +13,7 @@ enum WINDOW_FUNCTION
 static class AudioFreqParams
 {
 public:
-	static std::vector<float> transformAudioDataByWindowFunction(juce::AudioBuffer<float> audioData);
+	static std::vector<float> transformAudioDataByWindowFunction(juce::AudioBuffer<float> audioData, int* frameSize);
 	static std::vector<float> getVolume(juce::AudioBuffer<float> audioData, int sampleRate);
 	static std::vector<float> getCentroid(juce::AudioBuffer<float> audioData, int sampleRate);
 	static std::vector<float> getBandwidth(juce::AudioBuffer<float> audioData, int sampleRate);

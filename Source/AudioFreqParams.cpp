@@ -5,19 +5,22 @@
 
 void (*AudioFreqParams::chosenWindowFunction)(std::vector<float>&) = AudioFreqParams::rectangleWindowFunction;
 
-std::vector<float> AudioFreqParams::transformAudioDataByWindowFunction(juce::AudioBuffer<float> audioData)
+std::vector<float> AudioFreqParams::transformAudioDataByWindowFunction(juce::AudioBuffer<float> audioData, int* frameSize)
 {
 	auto* samples = audioData.getReadPointer(0);
 	int numSamples = audioData.getNumSamples();
-	numSamples -= numSamples % defaultFrameSize;
+
+	int fSize = (frameSize != nullptr) ? *frameSize : defaultFrameSize;
+
+	numSamples -= numSamples % fSize;
 
 	std::vector<float> transformedAudioData(numSamples);
 
-	for (int i = 0; i + defaultFrameSize < numSamples; i += defaultFrameSize)
+	for (int i = 0; i + fSize < numSamples; i += fSize)
 	{
-		std::vector<float> frame(defaultFrameSize);
+		std::vector<float> frame(fSize);
 		
-		for (size_t j = i; j < defaultFrameSize + i; j++)
+		for (size_t j = i; j < fSize + i; j++)
 		{
 			frame[j - i] = samples[j];
 		}
@@ -322,26 +325,39 @@ std::vector<float> AudioFreqParams::getFreqSpectrum(juce::AudioBuffer<float> aud
 	int fSize = (frameSize != nullptr) ? *frameSize : defaultFrameSize;
 	overlapLevel = std::clamp(overlapLevel, 0.0f, 0.99f);
 
-	std::vector<float> transformedAudioData = transformAudioDataByWindowFunction(audioData);
+	const auto* samples = audioData.getReadPointer(0);
+	const int numSamples = audioData.getNumSamples();
+
+	if (numSamples < fSize)
+	{
+		return {};
+	}
 
 	const int hopSize = std::roundf(fSize * (1.0f - overlapLevel));
 
-	const int frameCount = (transformedAudioData.size() - fSize) / hopSize + 1;
+	const int frameCount = (numSamples - fSize) / hopSize + 1;
 
 	const int freqSpectrumFrameSize = fSize / 2 + 1;
 	std::vector<float> freqSpectrum(freqSpectrumFrameSize * frameCount);
 
 	for (int i = 0; i < frameCount; i++)
 	{
-
-		float* in = (float*)fftwf_malloc(sizeof(float) * fSize);
+		std::vector<float> frame(fSize);
 
 		for (int j = 0; j < fSize; j++)
 		{
-			in[j] = transformedAudioData[i * hopSize + j];
+			frame[j] = samples[i * hopSize + j];
 		}
 
+		chosenWindowFunction(frame);
+
+		float* in = (float*)fftwf_malloc(sizeof(float) * fSize);
 		fftwf_complex* out = (fftwf_complex*)fftwf_malloc(sizeof(fftwf_complex) * freqSpectrumFrameSize);
+
+		for (int j = 0; j < fSize; j++)
+		{
+			in[j] = frame[j];
+		}
 
 		fftwf_plan plan = fftwf_plan_dft_r2c_1d(fSize, in, out, FFTW_ESTIMATE);
 
@@ -389,7 +405,7 @@ void AudioFreqParams::chooseWindowFunction(WINDOW_FUNCTION choice)
 
 void AudioFreqParams::rectangleWindowFunction(std::vector<float>& frame)
 {
-	for (size_t i = 0; i < defaultFrameSize; i++)
+	for (size_t i = 0; i < frame.size(); i++)
 	{
 		frame[i] *= 1.0f;
 	}
@@ -399,7 +415,7 @@ void AudioFreqParams::triangleWindowFunction(std::vector<float>& frame)
 {
 	const float tmpDiffVal = (float)(defaultFrameSize - 1) / 2.0f;
 
-	for (size_t i = 0; i < defaultFrameSize; i++)
+	for (size_t i = 0; i < frame.size(); i++)
 	{
 		frame[i] *= 1.0f - std::abs((float)(i - tmpDiffVal) / tmpDiffVal);
 	}
@@ -407,19 +423,19 @@ void AudioFreqParams::triangleWindowFunction(std::vector<float>& frame)
 
 void AudioFreqParams::hammingWindowFunction(std::vector<float>& frame)
 {
-	for (size_t i = 0; i < defaultFrameSize; i++)
+	for (size_t i = 0; i < frame.size(); i++)
 	{
 		frame[i] *= 0.53836f - 0.46164f *
-			std::cosf(2.0f * std::numbers::pi * i / (float)(defaultFrameSize - 1));
+			std::cosf(2.0f * std::numbers::pi * i / (float)(frame.size() - 1));
 	}
 }
 
 void AudioFreqParams::vanHannWindowFunction(std::vector<float>& frame)
 {
-	for (size_t i = 0; i < defaultFrameSize; i++)
+	for (size_t i = 0; i < frame.size(); i++)
 	{
 		frame[i] *= 0.5f * (1.0f - 
-			std::cosf(2.0f * std::numbers::pi * i / (float)(defaultFrameSize - 1)));
+			std::cosf(2.0f * std::numbers::pi * i / (float)(frame.size() - 1)));
 	}
 }
 
@@ -430,10 +446,10 @@ void AudioFreqParams::blackmanWindowFunction(std::vector<float>& frame)
 	const float a1 = 0.5f;
 	const float a2 = a / 2.0f;
 
-	for (size_t i = 0; i < defaultFrameSize; i++)
+	for (size_t i = 0; i < frame.size(); i++)
 	{
-		frame[i] *= a0 - a1 * std::cosf(2.0f * std::numbers::pi * i / (float)(defaultFrameSize - 1))
-			+ a2 * std::cosf(4.0f * std::numbers::pi * i / (float)(defaultFrameSize - 1));
+		frame[i] *= a0 - a1 * std::cosf(2.0f * std::numbers::pi * i / (float)(frame.size() - 1))
+			+ a2 * std::cosf(4.0f * std::numbers::pi * i / (float)(frame.size() - 1));
 	}
 }
 

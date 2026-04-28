@@ -120,7 +120,7 @@ void AudioParamsPlotComponent::setAudioData(juce::AudioBuffer<float> audioData, 
 	const int freqNumSamples = numSamples - numSamples % this->audioFreqParamsAnalyzer.defaultFrameSize;
 	this->windowTransformedTimestampsX.resize(freqNumSamples);
 	copy(this->timestampsX.begin(), this->timestampsX.begin() + freqNumSamples, this->windowTransformedTimestampsX.begin());
-	this->windowTransformedAudioValsY = audioFreqParamsAnalyzer.transformAudioDataByWindowFunction(this->audioData);
+	this->windowTransformedAudioValsY = audioFreqParamsAnalyzer.transformAudioDataByWindowFunction(this->audioData, nullptr);
 
 	this->updateFreqSpectrum();
 	this->updateFrameFreqSpectrumOnDisplay();
@@ -231,7 +231,7 @@ void AudioParamsPlotComponent::chooseWindowFunction(WINDOW_FUNCTION choice)
 	const int freqNumSamples = numSamples - numSamples % this->audioFreqParamsAnalyzer.defaultFrameSize;
 	this->windowTransformedTimestampsX.resize(freqNumSamples);
 	copy(this->timestampsX.begin(), this->timestampsX.begin() + freqNumSamples, this->windowTransformedTimestampsX.begin());
-	this->windowTransformedAudioValsY = audioFreqParamsAnalyzer.transformAudioDataByWindowFunction(this->audioData);
+	this->windowTransformedAudioValsY = audioFreqParamsAnalyzer.transformAudioDataByWindowFunction(this->audioData, nullptr);
 	
 	this->updateFreqSpectrum();
 	this->updateFrameFreqSpectrumOnDisplay();
@@ -503,9 +503,9 @@ void AudioParamsPlotComponent::renderFreqParamsPlot()
 					ImPlot::PushStyleVar(ImPlotStyleVar_PlotPadding, ImVec2(0, 0));
 					ImPlot::PushStyleVar(ImPlotStyleVar_PlotBorderSize, 0.0f);
 
-					ImPlot::SetupAxes("Frequence [Hz]", "Amplitude");
+					ImPlot::SetupAxes("Frequency [Hz]", "Amplitude");
 
-					ImPlot::PlotLine("Frequence spectrum", this->frameFreqSpectrumX.data(), this->frameFreqSpectrumY.data(), (int)this->frameFreqSpectrumY.size());
+					ImPlot::PlotLine("Frequency spectrum", this->frameFreqSpectrumX.data(), this->frameFreqSpectrumY.data(), (int)this->frameFreqSpectrumY.size());
 
 					ImPlot::PopStyleVar(2);
 					ImPlot::EndPlot();
@@ -525,9 +525,9 @@ void AudioParamsPlotComponent::renderFreqParamsPlot()
 					ImPlot::PushStyleVar(ImPlotStyleVar_PlotPadding, ImVec2(0, 0));
 					ImPlot::PushStyleVar(ImPlotStyleVar_PlotBorderSize, 0.0f);
 
-					ImPlot::SetupAxes("Time [s]", "Frequence [Hz]");
+					ImPlot::SetupAxes("Time [s]", "Frequency [Hz]");
 
-					ImPlot::PlotLine("Frequence spectrum", this->freqFrameTimestampsX.data(), this->cepstrumFrequences.data(), (int)this->cepstrumFrequences.size());
+					ImPlot::PlotLine("Laryngeal frequency", this->freqFrameTimestampsX.data(), this->cepstrumFrequences.data(), (int)this->cepstrumFrequences.size());
 
 					ImPlot::PopStyleVar(2);
 					ImPlot::EndPlot();
@@ -558,7 +558,7 @@ void AudioParamsPlotComponent::renderSpectrogramPlot()
 {
 	std::lock_guard<std::mutex> lock(this->setDataMutex);
 
-	if (this->sampleRate == 0 || this->freqSpectrum.empty())
+	if (this->sampleRate == 0 || this->spectrogramFreqSpectrum.empty())
 	{
 		return;
 	}
@@ -687,12 +687,22 @@ void AudioParamsPlotComponent::updateSpectrogram()
 	}
 	this->spectrogramData.resize(this->spectrogramFrames * this->spectrogramBins);
 
+	float maxA = 0.0f;
+
+	for (float A : this->spectrogramFreqSpectrum)
+	{
+		maxA = std::max(maxA, A);
+	}
+
 	for (int t = 0; t < this->spectrogramFrames; t++)
 	{
 		for (int f = 0; f < this->spectrogramBins; f++)
 		{
 			float amplitude = this->spectrogramFreqSpectrum[t * this->spectrogramBins + f];
-			float dBValue = 20.0f * std::log10(amplitude + 1e-6f);
+			float dBValue = 20.0f * std::log10((amplitude / maxA) + 1e-6f);
+
+			dBValue = std::clamp(dBValue, -80.0f, 0.0f);
+
 			this->spectrogramData[(this->spectrogramBins - 1 - f) * this->spectrogramFrames + t] = dBValue;
 		}
 	}
@@ -817,6 +827,8 @@ void AudioParamsPlotComponent::fillChosenFreqFrame()
 	drawList->AddRectFilled(p1, p2, IM_COL32(255, 0, 0, 60));
 
 	ImPlot::PopPlotClipRect();
+
+	this->shouldFitPlots = true;
 }
 
 void AudioParamsPlotComponent::newOpenGLContextCreated()
