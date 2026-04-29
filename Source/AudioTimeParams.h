@@ -24,7 +24,7 @@ public:
 	static std::vector<float> getHZCRR(juce::AudioBuffer<float> audioData, int sampleRate);
 	/*Detekcja mowy/muzyki*/
 	static std::vector<int> musicSpeechDetection(juce::AudioBuffer<float> audioData, int sampleRate);
-	static const int frameSize = 512;
+	static const int frameSize = 1024;
 private:
 	static std::vector<float> getFundamentalFreq(juce::AudioBuffer<float> audioData, int sampleRate, float (*estimateFunction)(float, float), bool (*conditionFuncion)(float, float));
 	static float autoCorrelation(float a, float b);

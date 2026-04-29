@@ -190,10 +190,17 @@ std::vector<std::vector<float>> AudioFreqParams::getSFM(juce::AudioBuffer<float>
 
 		for (size_t k = 0; k < 3; k++)
 		{
-			geoms[k] = std::powf(expf(geoms[k]), 1.0f / (float)N[k]);
-			arithms[k] /= N[k];
+			if (arithms[k] == 0.0f)
+			{
+				SFMs[k][i] = 0.0f;
+			}
+			else
+			{
+				geoms[k] = std::expf(geoms[k] / (float)(N[k]));
+				arithms[k] /= N[k];
 
-			SFMs[k][i] = geoms[k] / arithms[k];
+				SFMs[k][i] = geoms[k] / arithms[k];
+			}
 		}
 	}
 
@@ -260,7 +267,7 @@ std::vector<std::vector<float>> AudioFreqParams::getSCF(juce::AudioBuffer<float>
 	return SCFs;
 }
 
-std::vector<float> AudioFreqParams::getCepstrumFrequences(juce::AudioBuffer<float> audioData, int sampleRate)
+std::vector<float> AudioFreqParams::getCepstrumFrequences(juce::AudioBuffer<float> audioData, int sampleRate, std::vector<bool> sonorousFrames)
 {
 	auto freqSpectrum = getFreqSpectrum(audioData, sampleRate, nullptr, 0.0f);
 
@@ -283,6 +290,12 @@ std::vector<float> AudioFreqParams::getCepstrumFrequences(juce::AudioBuffer<floa
 
 	for (int i = 0; i < frameCount; i++)
 	{
+		if (!sonorousFrames[i])
+		{
+			cepstrumFrequences[i] = 0.0f;
+			continue;
+		}
+
 		for (int j = 0; j < freqSpectrumFrameSize; j++)
 		{
 			float mag = freqSpectrum[i * freqSpectrumFrameSize + j];

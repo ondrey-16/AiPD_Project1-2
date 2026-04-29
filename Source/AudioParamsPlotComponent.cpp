@@ -140,7 +140,8 @@ void AudioParamsPlotComponent::setAudioData(juce::AudioBuffer<float> audioData, 
 
 	this->updateSpectrogram();
 
-	this->cepstrumFrequences = this->audioFreqParamsAnalyzer.getCepstrumFrequences(this->audioData, this->sampleRate);
+	this->cepstrumFrequences = this->audioFreqParamsAnalyzer.getCepstrumFrequences(this->audioData, this->sampleRate, 
+		this->audioTimeParamsAnalyzer.sonorousDetection(this->audioData, this->sampleRate));
 
 	this->shouldFitPlots = true;
 }
@@ -236,8 +237,10 @@ void AudioParamsPlotComponent::chooseWindowFunction(WINDOW_FUNCTION choice)
 	this->updateFreqSpectrum();
 	this->updateFrameFreqSpectrumOnDisplay();
 
-	this->updateSpectrogram();
+	this->cepstrumFrequences = this->audioFreqParamsAnalyzer.getCepstrumFrequences(this->audioData, this->sampleRate,
+		this->audioTimeParamsAnalyzer.sonorousDetection(this->audioData, this->sampleRate));
 
+	this->updateSpectrogram();
 }
 
 void AudioParamsPlotComponent::paint(juce::Graphics& g)
@@ -484,7 +487,7 @@ void AudioParamsPlotComponent::renderFreqParamsPlot()
 					this->fillChosenFreqFrame();
 
 					ImPlot::PlotLine("ERSB", this->freqFrameTimestampsX.data(), this->freqBandEnergyRatiosY[band].data(), (int)this->freqBandEnergyRatiosY[band].size());
-					ImPlot::PlotLine("SFN", this->freqFrameTimestampsX.data(), this->freqSFNs[band].data(), (int)this->freqSFNs[band].size());
+					ImPlot::PlotLine("SFM", this->freqFrameTimestampsX.data(), this->freqSFNs[band].data(), (int)this->freqSFNs[band].size());
 					ImPlot::PlotLine("SCF", this->freqFrameTimestampsX.data(), this->freqSCFs[band].data(), (int)this->freqSCFs[band].size());
 
 					ImPlot::PopStyleVar(2);

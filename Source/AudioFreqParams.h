@@ -20,10 +20,10 @@ public:
 	static std::vector<std::vector<float>> getBandEnergyRatio(juce::AudioBuffer<float> audioData, int sampleRate);
 	static std::vector<std::vector<float>> getSFM(juce::AudioBuffer<float> audioData, int sampleRate);
 	static std::vector<std::vector<float>> getSCF(juce::AudioBuffer<float> audioData, int sampleRate);
-	static std::vector<float> getCepstrumFrequences(juce::AudioBuffer<float> audioData, int sampleRate);
+	static std::vector<float> getCepstrumFrequences(juce::AudioBuffer<float> audioData, int sampleRate, std::vector<bool> sonorousFrames);
 	static std::vector<float> getFreqSpectrum(juce::AudioBuffer<float> audioData, int sampleRate, int* frameSize, float overlapLevel);
 	static void chooseWindowFunction(WINDOW_FUNCTION choice);
-	static const int defaultFrameSize = 512;
+	static const int defaultFrameSize = 1024;
 private:
 	static void (*chosenWindowFunction)(std::vector<float>&);
 	static void rectangleWindowFunction(std::vector<float>& frame);

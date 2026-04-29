@@ -59,8 +59,8 @@ MainComponent::MainComponent()
     this->overlap25SpectrogramChoiceButton.setClickingTogglesState(true);
     this->overlap50SpectrogramChoiceButton.setClickingTogglesState(true);
 
-    this->selectFreqParamPlotButton.addItem("Frequence parameters plot", 1);
-    this->selectFreqParamPlotButton.addItem("Frequence band-parameters plot", 2);
+    this->selectFreqParamPlotButton.addItem("Frequency parameters plot", 1);
+    this->selectFreqParamPlotButton.addItem("Frequency band-parameters plot", 2);
     this->selectFreqParamPlotButton.addItem("Frame frequence spectrum", 3);
     this->selectFreqParamPlotButton.addItem("Laryngeal frequency plot", 4);
 
