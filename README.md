@@ -1,0 +1,1 @@
+# Przed kompilowanie programu, we właściwościach projektu AW_AiPD_Proj1_App we Właściwości konfiguracji -> Debugowanie w polu Środowisko należy wpisać `PATH=$(ProjectDir)..\..\FFTW;%PATH%`. Jest to konieczne, żeby program mógł widzieć pliki .dll biblioteki FFTW.
