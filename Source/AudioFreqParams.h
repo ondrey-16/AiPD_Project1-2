@@ -13,18 +13,25 @@ enum WINDOW_FUNCTION
 static class AudioFreqParams
 {
 public:
+	// Transformacja sygnału wybraną funkcją okienkową
 	static std::vector<float> transformAudioDataByWindowFunction(juce::AudioBuffer<float> audioData, int* frameSize);
+	// Parametry częstotliwościowe
 	static std::vector<float> getVolume(juce::AudioBuffer<float> audioData, int sampleRate);
 	static std::vector<float> getCentroid(juce::AudioBuffer<float> audioData, int sampleRate);
 	static std::vector<float> getBandwidth(juce::AudioBuffer<float> audioData, int sampleRate);
 	static std::vector<std::vector<float>> getBandEnergyRatio(juce::AudioBuffer<float> audioData, int sampleRate);
 	static std::vector<std::vector<float>> getSFM(juce::AudioBuffer<float> audioData, int sampleRate);
 	static std::vector<std::vector<float>> getSCF(juce::AudioBuffer<float> audioData, int sampleRate);
+	// Wyznaczanie częstotliwości krtaniowych za pomocą cepstrum
 	static std::vector<float> getCepstrumFrequences(juce::AudioBuffer<float> audioData, int sampleRate, std::vector<bool> sonorousFrames);
+	// Wyznaczanie widma częstotliwościowego
 	static std::vector<float> getFreqSpectrum(juce::AudioBuffer<float> audioData, int sampleRate, int* frameSize, float overlapLevel);
+	// Wybór funkcji okienkowej
 	static void chooseWindowFunction(WINDOW_FUNCTION choice);
+	// Domyślny rozmiar ramki
 	static const int defaultFrameSize = 1024;
 private:
+	// Funkcje okienkowe
 	static void (*chosenWindowFunction)(std::vector<float>&);
 	static void rectangleWindowFunction(std::vector<float>& frame);
 	static void triangleWindowFunction(std::vector<float>& frame);

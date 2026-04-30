@@ -147,6 +147,7 @@ std::vector<std::vector<float>> AudioFreqParams::getBandEnergyRatio(juce::AudioB
 	return bandEnergyRatios;
 }
 
+// Do średniej geometrycznnej wykorzystany był inny, równoważny wzór sumujący logarytmy, zamiast mnożyć wszystkich wyrazów, aby wynik był stabilniejszy i bardziej poprawny numerycznie.
 std::vector<std::vector<float>> AudioFreqParams::getSFM(juce::AudioBuffer<float> audioData, int sampleRate)
 {
 	auto freqSpectrum = getFreqSpectrum(audioData, sampleRate, nullptr, 0.0f);
