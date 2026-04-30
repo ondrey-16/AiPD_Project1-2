@@ -86,7 +86,7 @@
       <SubSystem>Windows</SubSystem>
       <LargeAddressAware>true</LargeAddressAware>
       <AdditionalDependencies>libfftw3f-3.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>C:\Users\andrz\source\repos\AiPD_Project1\FFTW;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>..\..\FFTW;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
     <Bscmake>
       <SuppressStartupBanner>true</SuppressStartupBanner>
@@ -3678,9 +3678,21 @@
     <None Include="..\..\..\..\..\..\..\Program Files\JUCE\JUCE\modules\juce_graphics\image_formats\jpglib\changes to libjpeg for JUCE.txt" />
     <None Include="..\..\..\..\..\..\..\Program Files\JUCE\JUCE\modules\juce_graphics\image_formats\pnglib\libpng_readme.txt" />
     <None Include="..\..\..\..\..\..\..\Program Files\JUCE\JUCE\modules\juce_graphics\unicode\sheenbidi\JUCE_CHANGES.txt" />
+    <None Include="..\..\FFTW\libfftw3-3.def" />
+    <None Include="..\..\FFTW\libfftw3-3.dll" />
+    <None Include="..\..\FFTW\libfftw3-3.exp" />
+    <None Include="..\..\FFTW\libfftw3f-3.def" />
+    <None Include="..\..\FFTW\libfftw3f-3.dll" />
+    <None Include="..\..\FFTW\libfftw3f-3.exp" />
+    <None Include="..\..\FFTW\libfftw3l-3.def" />
+    <None Include="..\..\FFTW\libfftw3l-3.dll" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include=".\resources.rc" />
+  </ItemGroup>
+  <ItemGroup>
+    <Library Include="..\..\FFTW\libfftw3-3.lib" />
+    <Library Include="..\..\FFTW\libfftw3f-3.lib" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
 </Project>

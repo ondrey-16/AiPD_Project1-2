@@ -469,6 +469,9 @@
     <Filter Include="ImGui">
       <UniqueIdentifier>{156835fa-edc5-4106-941f-4886c625b38f}</UniqueIdentifier>
     </Filter>
+    <Filter Include="FFTW">
+      <UniqueIdentifier>{8b40c65f-8e9d-48b0-a7d0-0f8e5d8496a5}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\Source\Main.cpp">
@@ -6358,10 +6361,42 @@
     <None Include="..\..\..\..\..\..\..\Program Files\JUCE\JUCE\modules\juce_graphics\unicode\sheenbidi\JUCE_CHANGES.txt">
       <Filter>JUCE Modules\juce_graphics\unicode\sheenbidi</Filter>
     </None>
+    <None Include="..\..\FFTW\libfftw3-3.def">
+      <Filter>FFTW</Filter>
+    </None>
+    <None Include="..\..\FFTW\libfftw3-3.dll">
+      <Filter>FFTW</Filter>
+    </None>
+    <None Include="..\..\FFTW\libfftw3-3.exp">
+      <Filter>FFTW</Filter>
+    </None>
+    <None Include="..\..\FFTW\libfftw3f-3.def">
+      <Filter>FFTW</Filter>
+    </None>
+    <None Include="..\..\FFTW\libfftw3f-3.dll">
+      <Filter>FFTW</Filter>
+    </None>
+    <None Include="..\..\FFTW\libfftw3f-3.exp">
+      <Filter>FFTW</Filter>
+    </None>
+    <None Include="..\..\FFTW\libfftw3l-3.def">
+      <Filter>FFTW</Filter>
+    </None>
+    <None Include="..\..\FFTW\libfftw3l-3.dll">
+      <Filter>FFTW</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include=".\resources.rc">
       <Filter>JUCE Library Code</Filter>
     </ResourceCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <Library Include="..\..\FFTW\libfftw3-3.lib">
+      <Filter>FFTW</Filter>
+    </Library>
+    <Library Include="..\..\FFTW\libfftw3f-3.lib">
+      <Filter>FFTW</Filter>
+    </Library>
   </ItemGroup>
 </Project>
