@@ -22,10 +22,12 @@ MainComponent::MainComponent()
     addAndMakeVisible(this->overlap50SpectrogramChoiceButton);
 
     addAndMakeVisible(this->audioParamsPlot);
+    addAndMakeVisible(this->voiceVerifier);
 
     addAndMakeVisible(this->timeParamsPlotsChoiceButton);
     addAndMakeVisible(this->freqParamsPlotsChoiceButton);
     addAndMakeVisible(this->spectrogramChoiceButton);
+    addAndMakeVisible(this->voiceVerifyChoiceButton);
 
     this->silenceButton.setButtonText("Silence detection");
     this->sonorousButton.setButtonText("Sonorous frames detection");
@@ -34,6 +36,7 @@ MainComponent::MainComponent()
     this->timeParamsPlotsChoiceButton.setButtonText("Show time audio parameters");
     this->freqParamsPlotsChoiceButton.setButtonText("Show frequence audio parameters");
     this->spectrogramChoiceButton.setButtonText("Show spectrogram");
+    this->voiceVerifyChoiceButton.setButtonText("Voice verification");
 
     this->frame256SpectrogramChoiceButton.setButtonText("Frame size 256");
     this->frame512SpectrogramChoiceButton.setButtonText("Frame size 512");
@@ -50,6 +53,7 @@ MainComponent::MainComponent()
     this->timeParamsPlotsChoiceButton.setClickingTogglesState(true);
     this->freqParamsPlotsChoiceButton.setClickingTogglesState(true);
     this->spectrogramChoiceButton.setClickingTogglesState(true);
+    this->voiceVerifyChoiceButton.setClickingTogglesState(true);
 
     this->frame256SpectrogramChoiceButton.setClickingTogglesState(true);
     this->frame512SpectrogramChoiceButton.setClickingTogglesState(true);
@@ -83,6 +87,7 @@ MainComponent::MainComponent()
     this->timeParamsPlotsChoiceButton.setRadioGroupId(2);
     this->freqParamsPlotsChoiceButton.setRadioGroupId(2);
     this->spectrogramChoiceButton.setRadioGroupId(2);
+    this->voiceVerifyChoiceButton.setRadioGroupId(2);
 
     this->frame256SpectrogramChoiceButton.setRadioGroupId(3);
     this->frame512SpectrogramChoiceButton.setRadioGroupId(3);
@@ -91,6 +96,8 @@ MainComponent::MainComponent()
     this->overlap0SpectrogramChoiceButton.setRadioGroupId(4);
     this->overlap25SpectrogramChoiceButton.setRadioGroupId(4);
     this->overlap50SpectrogramChoiceButton.setRadioGroupId(4);
+
+    this->voiceVerifier.setVisible(false);
 
     setSize (1200, 800);
 	this->audioData.setSize(0, 0);
@@ -115,6 +122,9 @@ MainComponent::MainComponent()
 
         this->changeButtonsVisibility(true, false, false, false);
 
+        this->audioParamsPlot.setVisible(true);
+        this->voiceVerifier.setVisible(false);
+
         audioParamsPlot.changePlotPage(this->plotPage);
         resized();
         repaint();
@@ -123,6 +133,9 @@ MainComponent::MainComponent()
         this->plotPage = PLOT_PAGE::FREQ_PARAMS;
 
         this->changeButtonsVisibility(false, true, false, true);
+
+        this->audioParamsPlot.setVisible(true);
+        this->voiceVerifier.setVisible(false);
 
         audioParamsPlot.changePlotPage(this->plotPage);
         resized();
@@ -139,7 +152,20 @@ MainComponent::MainComponent()
 
         this->changeButtonsVisibility(false, false, true, true);
 
+        this->audioParamsPlot.setVisible(true);
+        this->voiceVerifier.setVisible(false);
+
         audioParamsPlot.changePlotPage(this->plotPage);
+        resized();
+        repaint();
+    };
+    this->voiceVerifyChoiceButton.onClick = [this] {
+        this->plotPage = PLOT_PAGE::VOICE_VERIFY;
+
+        this->changeButtonsVisibility(false, false, false, false);
+        this->audioParamsPlot.setVisible(false);
+        this->voiceVerifier.setVisible(true);
+
         resized();
         repaint();
     };
@@ -192,6 +218,7 @@ void MainComponent::resized()
     this->timeParamsPlotsChoiceButton.setBounds(50, 40, 150, 30);
     this->freqParamsPlotsChoiceButton.setBounds(300, 40, 150, 30);
     this->spectrogramChoiceButton.setBounds(550, 40, 150, 30);
+    this->voiceVerifyChoiceButton.setBounds(800, 40, 170, 30);
     
     switch (this->plotPage)
     {
@@ -219,6 +246,21 @@ void MainComponent::resized()
             this->overlap50SpectrogramChoiceButton.setBounds(760, 140, 120, 30);
             break;
         }
+        case PLOT_PAGE::VOICE_VERIFY:
+        {
+            this->silenceButton.setVisible(false);
+            this->sonorousButton.setVisible(false);
+            this->speechMusicButton.setVisible(false);
+            this->selectFreqParamPlotButton.setVisible(false);
+            this->selectWindowFunctionButton.setVisible(false);
+
+            this->frame256SpectrogramChoiceButton.setVisible(false);
+            this->frame512SpectrogramChoiceButton.setVisible(false);
+            this->frame1024SpectrogramChoiceButton.setVisible(false);
+            this->overlap0SpectrogramChoiceButton.setVisible(false);
+            this->overlap25SpectrogramChoiceButton.setVisible(false);
+            this->overlap50SpectrogramChoiceButton.setVisible(false);
+        }
     }
 
     auto bounds = this->getLocalBounds();
@@ -227,6 +269,7 @@ void MainComponent::resized()
     plotArea.removeFromTop(140);
 
     this->audioParamsPlot.setBounds(plotArea);
+    this->voiceVerifier.setBounds(plotArea);
 }
 
 juce::StringArray MainComponent::getMenuBarNames()

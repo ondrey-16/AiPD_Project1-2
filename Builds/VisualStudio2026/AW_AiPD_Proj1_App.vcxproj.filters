@@ -2904,6 +2904,7 @@
     <ClCompile Include="..\..\Source\AudioFreqParams.cpp">
       <Filter>AW_AiPD_Proj1\Source</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\Source\VoiceVerifierComponent.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Source\MainComponent.h">
@@ -6315,6 +6316,9 @@
       <Filter>ImGui</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Source\AudioFreqParams.h">
+      <Filter>AW_AiPD_Proj1\Source</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\VoiceVerifierComponent.h">
       <Filter>AW_AiPD_Proj1\Source</Filter>
     </ClInclude>
   </ItemGroup>

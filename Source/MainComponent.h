@@ -1,6 +1,7 @@
 #pragma once
 #include "WAVDataAnalyzer.h"
 #include "AudioParamsPlotComponent.h"
+#include "VoiceVerifierComponent.h"
 
 class MainComponent  : public juce::Component, juce::MenuBarModel
 {
@@ -42,6 +43,7 @@ private:
 	juce::ToggleButton timeParamsPlotsChoiceButton;
 	juce::ToggleButton freqParamsPlotsChoiceButton;
 	juce::ToggleButton spectrogramChoiceButton;
+	juce::ToggleButton voiceVerifyChoiceButton;
 
 	juce::ToggleButton frame256SpectrogramChoiceButton;
 	juce::ToggleButton frame512SpectrogramChoiceButton;
@@ -57,6 +59,7 @@ private:
 	PLOT_PAGE plotPage = PLOT_PAGE::TIME_PARAMS;
 
 	AudioParamsPlotComponent audioParamsPlot;
+	VoiceVerifierComponent voiceVerifier;
 
 	void changeButtonsVisibility(bool forTimePageVisible, bool forFreqPageVisible, bool forSpectrogramVisible, bool forFreqAndSpectrogramVisible);
 	void drawFrameParamPlot(juce::Graphics& g, juce::Rectangle<int> plotArea, const std::vector<float>& params, juce::Colour color);

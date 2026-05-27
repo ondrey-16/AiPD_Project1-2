@@ -20,7 +20,8 @@ enum PLOT_PAGE
 {
 	TIME_PARAMS,
 	FREQ_PARAMS,
-	SPECTROGRAM
+	SPECTROGRAM,
+	VOICE_VERIFY
 };
 
 class AudioParamsPlotComponent : public juce::Component, juce::OpenGLRenderer

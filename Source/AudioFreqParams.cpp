@@ -395,6 +395,15 @@ std::vector<float> AudioFreqParams::getFreqSpectrum(juce::AudioBuffer<float> aud
 	return freqSpectrum;
 }
 
+std::vector<std::vector<float>> AudioFreqParams::getMFCC(juce::AudioBuffer<float> audioData, int sampleRate)
+{
+	auto preemphase = preemphaseStage(audioData, sampleRate);
+	auto poweredSpectrum = fft2Stage(preemphase, sampleRate);
+	auto mels = melFiltersStage(poweredSpectrum, sampleRate, 20);
+	auto logEnergies = logStage(mels);
+	return dctStage(logEnergies);
+}
+
 void AudioFreqParams::chooseWindowFunction(WINDOW_FUNCTION choice)
 {
 	switch (choice)
@@ -465,6 +474,170 @@ void AudioFreqParams::blackmanWindowFunction(std::vector<float>& frame)
 		frame[i] *= a0 - a1 * std::cosf(2.0f * std::numbers::pi * i / (float)(frame.size() - 1))
 			+ a2 * std::cosf(4.0f * std::numbers::pi * i / (float)(frame.size() - 1));
 	}
+}
+
+juce::AudioBuffer<float> AudioFreqParams::preemphaseStage(juce::AudioBuffer<float> audioData, int sampleRate)
+{
+	const float a = 0.97f;
+	auto* samples = audioData.getReadPointer(0);
+	int numSamples = audioData.getNumSamples();
+
+	juce::AudioBuffer<float> modifiedAudioData(1, numSamples - 1);
+	float* output = modifiedAudioData.getWritePointer(0);
+
+	for (size_t i = 0; i < numSamples - 1; i++)
+	{
+		output[i] = samples[i + 1] - samples[i] * a;
+	}
+
+	return modifiedAudioData;
+}
+
+std::vector<float> AudioFreqParams::fft2Stage(juce::AudioBuffer<float> audioData, int sampleRate)
+{
+	auto prevFunction = chosenWindowFunction;
+	chosenWindowFunction = hammingWindowFunction;
+
+	auto spectrum = getFreqSpectrum(audioData, sampleRate, nullptr, 0.0f);
+
+	for (int i = 0; i < spectrum.size(); i++)
+	{
+		spectrum[i] *= spectrum[i];
+	}
+
+	chosenWindowFunction = prevFunction;
+
+	return spectrum;
+}
+
+std::vector<std::vector<float>> AudioFreqParams::getMelFilters(int sampleRate, int frameSize, int filterCount, float minFreq, float maxFreq)
+{
+	const int spectrumFrameSize = frameSize / 2 + 1;
+
+	std::vector<std::vector<float>> filters(filterCount, std::vector<float>(spectrumFrameSize, 0.0f));
+
+	const float minMel = hzToMel(minFreq);
+	const float maxMel = hzToMel(maxFreq);
+
+	std::vector<float> melPoints(filterCount + 2);
+	std::vector<int> binPoints(filterCount + 2);
+
+	for (int i = 0; i < filterCount + 2; i++)
+	{
+		melPoints[i] = minMel + (maxMel - minMel) * static_cast<float>(i) / static_cast<float>(filterCount + 1);
+
+		binPoints[i] = static_cast<int>(std::floor((frameSize + 1) * melToHz(melPoints[i]) / sampleRate));
+
+		binPoints[i] = std::clamp(binPoints[i], 0, spectrumFrameSize - 1);
+	}
+
+	for (int m = 1; m <= filterCount; m++)
+	{
+		const int leftBin = binPoints[m - 1];
+		const int centerBin = binPoints[m];
+		const int rightBin = binPoints[m + 1];
+
+		if (centerBin == leftBin || rightBin == centerBin)
+		{
+			continue;
+		}
+
+		for (int k = leftBin; k < centerBin; k++)
+		{
+			filters[m - 1][k] = static_cast<float>(k - leftBin) / static_cast<float>(centerBin - leftBin);
+		}
+
+		for (int k = centerBin; k <= rightBin; k++)
+		{
+			filters[m - 1][k] = static_cast<float>(rightBin - k) / static_cast<float>(rightBin - centerBin);
+		}
+	}
+
+	return filters;
+}
+
+std::vector<std::vector<float>> AudioFreqParams::melFiltersStage(std::vector<float>& poweredSpectrum, int sampleRate, int filterCount)
+{
+	const int frameSize = defaultFrameSize;
+	const int spectrumFrameSize = frameSize / 2 + 1;
+	
+	const int frameCount = static_cast<int>(poweredSpectrum.size()) / spectrumFrameSize;
+
+	auto filters = getMelFilters(sampleRate, frameSize, filterCount, 0.0f, sampleRate / 2.0f);
+
+	std::vector<std::vector<float>> melEnergies(frameCount, std::vector<float>(filterCount, 0.0f));
+
+	for (int frame = 0; frame < frameCount; frame++)
+	{
+		for (int m = 0; m < filterCount; m++)
+		{
+			float energy = 0.0f;
+
+			for (int k = 0; k < spectrumFrameSize; k++)
+			{
+				energy += poweredSpectrum[frame * spectrumFrameSize + k] * filters[m][k];
+			}
+
+			melEnergies[frame][m] = energy;
+		}
+	}
+
+	return melEnergies;
+}
+
+std::vector<std::vector<float>> AudioFreqParams::logStage(std::vector<std::vector<float>>& melEnergies)
+{
+	const float eps = 1e-12f;
+
+	auto logEnergies = melEnergies;
+
+	for (auto& frame : logEnergies)
+	{
+		for (float& energy : frame)
+		{
+			energy = std::logf(energy + eps);
+		}
+	}
+
+	return logEnergies;
+}
+
+std::vector<std::vector<float>> AudioFreqParams::dctStage(std::vector<std::vector<float>>& logMelEnergies)
+{
+	const int frameCount = logMelEnergies.size();
+	const int filterCount = logMelEnergies[0].size();
+
+	std::vector<std::vector<float>> mfcc(frameCount, std::vector<float>(filterCount - 1, 0.0f));
+
+	const float normalization = std::sqrtf(2.0f / (float)filterCount);
+
+	for (int frame = 0; frame < frameCount; frame++)
+	{
+		for (int i = 1; i < filterCount; i++)
+		{
+			float sum = 0.0f;
+
+			for (int m = 0; m < filterCount; m++)
+			{
+				sum += logMelEnergies[frame][m] * std::cosf(std::numbers::pi_v<float> *
+					(float)i * ((float)(m) + 0.5f) / (float)(filterCount));
+			}
+
+			mfcc[frame][i - 1] = normalization * sum;
+		}
+	}
+
+	return mfcc;
+}
+
+float AudioFreqParams::hzToMel(float f)
+{
+	return 2595.0f * std::log10f(1.0f + f / 700.0f);
+}
+
+float AudioFreqParams::melToHz(float mel)
+{
+	return 700.0f * (std::powf(10.0f, mel / 2595.0f) - 1.0f);
 }
 
 
