@@ -41,6 +41,7 @@ private:
 	static void vanHannWindowFunction(std::vector<float>& frame);
 	static void blackmanWindowFunction(std::vector<float>& frame);
 
+	// Weryfikacja głosu
 	static juce::AudioBuffer<float> preemphaseStage(juce::AudioBuffer<float> audioData, int sampleRate);
 	static std::vector<float> fft2Stage(juce::AudioBuffer<float> audioData, int sampleRate);
 	static std::vector<std::vector<float>> getMelFilters(int sampleRate, int frameSize, int filterCount, float minFreq, float maxFreq);
