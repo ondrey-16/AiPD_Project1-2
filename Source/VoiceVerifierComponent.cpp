@@ -206,7 +206,7 @@ void VoiceVerifierComponent::verifyVoice()
 
 	const float distance = getDistance(referenceVector, verifyVector);
 
-	const float threshold = 0.5f;
+	const float threshold = 0.47f;
 
 	const bool accepted = distance <= threshold;
 
